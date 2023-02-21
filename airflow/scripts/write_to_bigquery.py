@@ -1,8 +1,42 @@
+# --- Imports ---
 import pyspark
 from pyspark.sql import SparkSession
 from pyspark.conf import SparkConf
 from pyspark.context import SparkContext
 from pyspark.sql.functions import floor, col, expr, from_unixtime, concat, concat_ws, lit, hour, minute, year
+import subprocess
+
+# --- Declare Variables ---
+measure_code = 'MYH0036'
+LOCAL_BASE_PATH = 'data'
+bucket_name = "de-project-bucket"
+measure_path = f'{LOCAL_BASE_PATH}/{measure_code}'
+project_id = 'de-zoomcamp-project-377704'
+table_id = 'median_wait_time'
+credentials_location = '/.gc/gc-key.json'
+
+# --- Spark ---
+conf = SparkConf() \
+    .setMaster('local[*]') \
+    .setAppName('test') \
+    .set("spark.jars", "/home/spark-connectors/gcs-connector/gcs-connector-hadoop3-2.2.5.jar,/home/spark-connectors/bigquery-connector/spark-3.1-bigquery-0.28.0-preview.jar") \
+    .set("spark.hadoop.google.cloud.auth.service.account.enable", "true") \
+    .set("spark.hadoop.google.cloud.auth.service.account.json.keyfile", credentials_location) \
+    .set("spark.driver.extraClassPath", "/home/spark-connectors/gcs-connector/gcs-connector-hadoop3-2.2.5.jar") \
+    .set("temporaryGcsBucket", bucket_name)
+sc = SparkContext.getOrCreate(conf=conf)
+hadoop_conf = sc._jsc.hadoopConfiguration()
+hadoop_conf.set("fs.AbstractFileSystem.gs.impl",  "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS")
+hadoop_conf.set("fs.gs.impl", "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem")
+hadoop_conf.set("fs.gs.auth.service.account.json.keyfile", credentials_location)
+hadoop_conf.set("fs.gs.auth.service.account.enable", "true")
+
+spark = SparkSession.builder \
+    .config(conf=sc.getConf()) \
+    .getOrCreate()
+print('scWebURL:', sc.uiWebUrl)
+# spark.conf.set("temporaryGcsBucket","de-project-bucket")
+
 # CREATE SPARK DFs FROM GCS FILES AND JOIN
 command = ['gsutil', 'ls', f'gs://{bucket_name}/{measure_path}/']
 output = subprocess.check_output(command).decode().split('\n')
@@ -21,9 +55,7 @@ df_join = df_join.withColumnRenamed('value', 'median_wait_time_minutes')
 df_join = df_join.withColumn('year', concat_ws('-', year('reporting_start_date'), year('reporting_end_date')))
 
 # DELETE TABLE IF EXISTS
-project_id = 'de-zoomcamp-project-377704'
-table_id = 'median_wait_time'
-subprocess.run(['bq', 'rm', '-f', f'{project_id}:{measure_name}.{table_id}'])
+subprocess.run(['bq', 'rm', '-f', f'{project_id}:{measure_code}.{table_id}'])
 
 # WRITE TO BIGQUERY
 description = """"
@@ -32,6 +64,6 @@ Data are presented for all patients, patients treated and admitted to the same h
 """
 df_join.write.format('bigquery') \
     .mode('overwrite') \
-    .option('table', f'{measure_name}.{table_id}') \
+    .option('table', f'{measure_code}.{table_id}') \
     .option('description', description) \
     .save()

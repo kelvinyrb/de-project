@@ -1,11 +1,11 @@
 version: '3'
 x-airflow-common:
-  &airflow-common
+  &airflow-common # define anchor
   build:
     context: .
     dockerfile: ./Dockerfile
   environment:
-    &airflow-common-env
+    &airflow-common-env # define anchor
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     AIRFLOW__CORE__FERNET_KEY: ''
@@ -17,21 +17,23 @@ x-airflow-common:
     AIRFLOW_CONN_GOOGLE_CLOUD_DEFAULT: 'google-cloud-platform://?extra__google_cloud_platform__key_path=/.gc/gc-key.json'
     GCP_PROJECT_ID: 'de-zoomcamp-project-377704'
     GCP_GCS_BUCKET: "de-project-bucket"
-
     PG_HOST: "${PG_HOST}"
     PG_USER: "${PG_USER}"
     PG_PASSWORD: "${PG_PASSWORD}"
     PG_PORT: "${PG_PORT}"
     PG_DATABASE: "${PG_DATABASE}"
     # AIRFLOW__CORE__ENABLE_XCOM_PICKLING: 'true'
+    # AIRFLOW_CONN_SPARK: 'spark://local%5B%2A%5D/?master=local%5B%2A%5D&spark_binary=spark-submit'
 
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
     - ./plugins:/opt/airflow/plugins
-    - ~/.google/credentials/:/.google/credentials:ro
+    - ~/.gc/:/.gc:ro
+    - ./scripts://opt/airflow/scripts
 
   user: "${AIRFLOW_UID:-50000}:0"
+  
   depends_on:
     &airflow-common-depends-on
     postgres:
@@ -44,8 +46,6 @@ services:
       POSTGRES_USER: airflow
       POSTGRES_PASSWORD: airflow
       POSTGRES_DB: airflow
-    volumes:
-      - postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 5s
@@ -53,7 +53,7 @@ services:
     restart: always
 
   airflow-webserver:
-    <<: *airflow-common
+    <<: *airflow-common # reference anchor
     command: webserver
     ports:
       - 8080:8080
@@ -83,7 +83,7 @@ services:
         condition: service_completed_successfully
 
   airflow-init:
-    <<: *airflow-common
+    <<: *airflow-common # reference anchor
     entrypoint: /bin/bash
     # yamllint disable rule:line-length
     command:
@@ -150,30 +150,24 @@ services:
         exec /entrypoint airflow version
     # yamllint enable rule:line-length
     environment:
-      <<: *airflow-common-env
+      <<: *airflow-common-env # reference anchor
       _AIRFLOW_DB_UPGRADE: 'true'
       _AIRFLOW_WWW_USER_CREATE: 'true'
-      # _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
-      # _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
       _AIRFLOW_WWW_USER_USERNAME: "${_AIRFLOW_WWW_USER_USERNAME}"
       _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD}
     user: "0:0"
     volumes:
       - .:/sources
-      # - ./config/airflow.cfg:/opt/airflow/airflow.cfg
 
   airflow-cli:
-    <<: *airflow-common
+    <<: *airflow-common # reference anchor
     profiles:
       - debug
     environment:
-      <<: *airflow-common-env
+      <<: *airflow-common-env # reference anchor
       CONNECTION_CHECK_MAX_COUNT: "0"
     # Workaround for entrypoint issue. See: https://github.com/apache/airflow/issues/16252
     command:
       - bash
       - -c
       - airflow
-
-volumes:
-  postgres-db-volume:

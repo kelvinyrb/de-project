@@ -4,4 +4,5 @@ pandas
 sqlalchemy
 psycopg2-binary
 pyspark
-apache-airflow-providers-apache-spark
+# apache-airflow-providers-apache-spark
+# apache-airflow-providers-cncf-kubernetes

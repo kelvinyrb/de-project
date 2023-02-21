@@ -11,7 +11,7 @@ from airflow import DAG
 from airflow.utils.dates import days_ago
 from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
-from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
+# from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
 
 import requests
 import json
@@ -83,6 +83,9 @@ def ingest(BASE_URL: str, headers: dict, measure_category_code: str, measure_cod
     measure_path = f'{LOCAL_BASE_PATH}/{measure_code}'
     if not os.path.exists(measure_path):
         os.makedirs(measure_path)
+        logging.info('Made measure_path')
+    else:
+        logging.info('Measure_path already exists.')
     for df in df_list:
         file_path = os.path.join(f'{LOCAL_BASE_PATH}/{measure_code}', f'{df.name}.parquet')
         df.to_parquet(file_path)
@@ -90,6 +93,8 @@ def ingest(BASE_URL: str, headers: dict, measure_category_code: str, measure_cod
     
     # LOAD PARQUET FILES TO GCS
     subprocess.run(['gsutil', '-m', 'cp', '-r', LOCAL_BASE_PATH, f'gs://{bucket_name}/'])
+    logging.info("Loaded to GCS")
+
 
 # --- DAG ---
 default_args = {
@@ -97,7 +102,8 @@ default_args = {
     'start_date': datetime(2023,2,20),
     'schedule_interval': None,
     'depends_on_past': False,
-    'retries': 1,
+    'catchup': False,
+    'retries': 0
 }
 with DAG(
     dag_id='workflow',
@@ -115,16 +121,17 @@ with DAG(
             'bucket_name': bucket_name
         }
     )
-    spark_submit_task = SparkSubmitOperator(
-		application = f'{AIRFLOW_HOME}/scripts/spark_test.py',
-		conn_id= 'spark_connection', 
-		task_id='spark_submit_task'
+    
+    write_to_bigquery_task = BashOperator(
+        task_id="write_to_bigquery_task",
+        bash_command="python /opt/airflow/scripts/write_to_bigquery.py"
     )
-
-    # download_dataset_task = BashOperator(
-    #     task_id="download_dataset_task",
-    #     bash_command=f"curl -sSLf {dataset_url} > {AIRFLOW_HOME}/{dataset_file}"
+    
+    # spark_submit_task = SparkSubmitOperator(
+    #     task_id='spark_submit_task',
+	# 	application = f'{AIRFLOW_HOME}/scripts/write_to_bigquery.py',
+	# 	conn_id='spark'
     # )
     
     # Workflow
-    ingest_task >> spark_submit_task
+    ingest_task >> write_to_bigquery_task
