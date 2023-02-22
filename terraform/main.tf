@@ -57,7 +57,7 @@ resource "google_compute_instance" "vm_instance" {
       "./de-project/terraform/install-dependencies.sh",
       "cd de-project/airflow",
       "mkdir -p ./dags ./logs ./plugins",
-      "echo -e "AIRFLOW_UID=$(id -u)" >> .env",
+      "echo -e \"AIRFLOW_UID=$(id -u)\" >> .env",
       "docker-compose build"
     ]
   }

@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/bin/bash -i
 
 # Store Google Credentials for service account
-credentials_path=".gc/gc-key.json"
+credentials_path="$HOME/.gc/gc-key.json"
 bashrc_path="$HOME/.bashrc"
 if grep -qxF "export GOOGLE_APPLICATION_CREDENTIALS=$credentials_path" "$bashrc_path"; then
     echo "Credentials already set in .bashrc"
