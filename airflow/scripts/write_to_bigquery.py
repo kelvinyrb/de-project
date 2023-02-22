@@ -9,9 +9,9 @@ import subprocess
 # --- Declare Variables ---
 measure_code = 'MYH0036'
 LOCAL_BASE_PATH = 'data'
-bucket_name = "de-project-bucket"
 measure_path = f'{LOCAL_BASE_PATH}/{measure_code}'
 project_id = 'de-zoomcamp-project-377704'
+bucket_name = f"de-project-bucket_{project_id}"
 table_id = 'median_wait_time'
 credentials_location = '/.gc/gc-key.json'
 
@@ -35,7 +35,6 @@ spark = SparkSession.builder \
     .config(conf=sc.getConf()) \
     .getOrCreate()
 print('scWebURL:', sc.uiWebUrl)
-# spark.conf.set("temporaryGcsBucket","de-project-bucket")
 
 # CREATE SPARK DFs FROM GCS FILES AND JOIN
 command = ['gsutil', 'ls', f'gs://{bucket_name}/{measure_path}/']

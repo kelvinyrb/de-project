@@ -27,7 +27,8 @@ headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleW
 measure_category_code = 'MYH-ED-TIME'
 measure_code = 'MYH0036'
 LOCAL_BASE_PATH = 'data'
-bucket_name = "de-project-bucket"
+project_id = 'de-zoomcamp-project-377704'
+bucket_name = f"de-project-bucket_{project_id}"
 
 # --- Functions ---
 def ingest(BASE_URL: str, headers: dict, measure_category_code: str, measure_code: str, LOCAL_BASE_PATH: str, bucket_name: str):
@@ -126,12 +127,6 @@ with DAG(
         task_id="write_to_bigquery_task",
         bash_command="python /opt/airflow/scripts/write_to_bigquery.py"
     )
-    
-    # spark_submit_task = SparkSubmitOperator(
-    #     task_id='spark_submit_task',
-	# 	application = f'{AIRFLOW_HOME}/scripts/write_to_bigquery.py',
-	# 	conn_id='spark'
-    # )
     
     # Workflow
     ingest_task >> write_to_bigquery_task

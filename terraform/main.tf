@@ -16,17 +16,15 @@ resource "google_compute_address" "static" {
 resource "google_compute_instance" "vm_instance" {
   name         = "terraform-instance"
   machine_type = "e2-standard-2"
-  # tags         = ["externalssh"]
 
   boot_disk {
     initialize_params {
       image = "ubuntu-os-cloud/ubuntu-2004-lts"
-      size = "10" // GB
+      size = "30" // GB
     }
   }
 
   network_interface {
-    # network = google_compute_network.vpc_network.self_link
     network = "default"
     access_config {
       nat_ip = google_compute_address.static.address
