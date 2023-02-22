@@ -5,3 +5,7 @@ airflow/plugins
 airflow/.env
 airflow/config
 airflow/dags/__pycache__
+*.tfstate
+*.tfstate.*
+*.terraform
+*.terraform.lock.*
