@@ -100,7 +100,7 @@ def ingest(BASE_URL: str, headers: dict, measure_category_code: str, measure_cod
 default_args = {
     'owner': 'airflow',
     'start_date': datetime(2023,2,20),
-    'schedule_interval': None,
+    'max_active_runs': 1,
     'depends_on_past': False,
     'catchup': False,
     'retries': 0
@@ -108,6 +108,7 @@ default_args = {
 with DAG(
     dag_id='workflow',
     default_args=default_args,
+    schedule_interval='@once',
 ) as dag:
     ingest_task = PythonOperator(
         task_id='ingest_task',

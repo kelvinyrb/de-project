@@ -1,5 +1,5 @@
 project =  "de-zoomcamp-project-377704"
 region = "australia-southeast2"
 zone = "australia-southeast2-a"
-user = "kelvin"
+user = "user"
 email = "de-project-service-account-856@de-zoomcamp-project-377704.iam.gserviceaccount.com"
