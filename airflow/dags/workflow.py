@@ -11,7 +11,6 @@ from airflow import DAG
 from airflow.utils.dates import days_ago
 from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
-# from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
 
 import requests
 import json
