@@ -29,3 +29,4 @@ mkdir bin
 cd bin
 wget https://github.com/docker/compose/releases/download/v2.15.1/docker-compose-linux-x86_64 -O docker-compose
 chmod +x docker-compose
+cd ~
