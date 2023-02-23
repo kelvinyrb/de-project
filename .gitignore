@@ -7,3 +7,4 @@ airflow/dags/__pycache__
 *.tfstate.*
 *.terraform
 *.terraform.lock.*
+playground*
