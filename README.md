@@ -1,4 +1,4 @@
-# Data Engineering Project: Emergency Department Wait Times in Australia
+# Data Engineering Project by Kelvin Ye <br> Emergency Department Wait Times in Australia
 
 ![Untitled](images/looker.png)
 
@@ -54,7 +54,6 @@ This project idea arose from a bad personal experience waiting in the emergency 
 
 ```bash
 mkdir ~/.ssh
-cd ~/.ssh
 ssh-keygen -t rsa -f ~/.ssh/ssh-key -C kelvin -b 2048
 # Ref: [https://cloud.google.com/compute/docs/connect/create-ssh-keys](https://cloud.google.com/compute/docs/connect/create-ssh-keys)
 ```
@@ -169,4 +168,4 @@ Once the data is extracted from the API, it is stored on the data lake with the 
 - Ingest API data into Data Lake (PythonOperator)
 - PySpark transform/load to Data Warehouse (BashOperator)
 
-Big thank you to [DataTalksClub](https://datatalks.club/) for making this project possible through their 100% free [Data Engineering Zoomcamp](https://github.com/DataTalksClub/data-engineering-zoomcamp)!
+Big thank you to [DataTalksClub](https://datatalks.club/) for teaching me the tools and making this project possible through their 100% free [Data Engineering Zoomcamp](https://github.com/DataTalksClub/data-engineering-zoomcamp)!
