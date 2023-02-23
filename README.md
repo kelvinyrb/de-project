@@ -1,4 +1,4 @@
-# Emergency Department Wait Times in Australia
+# Data Engineering Project: Emergency Department Wait Times in Australia
 
 ![Untitled](images/looker.png)
 
