@@ -6,7 +6,7 @@
 
 ## Problem statement
 
-Patient care and wait time management in emergency departments (ED) remains an area for improvement. This project analyse and identify ED wait time data in Australia based on various factors such as location (state and hospital) and year with the aim of improving decisions for resourcing, funding and patient care. 
+Patient care and wait time management in emergency departments (ED) remains an area for improvement around the world. This project aims to analyse and identify ED wait time data in Australia based on various factors such as location (state and hospital) and year with the aim of improving decisions for resourcing, funding and patient care. 
 
 This project idea arose from a bad personal experience waiting in the emergency room for over 10 hours through the night to get attention for a head injury. 
 
