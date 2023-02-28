@@ -129,9 +129,9 @@ The MyHospitals (API) provides access to a selection of hospital data in Austral
 
 [https://www.aihw.gov.au/reports-data/myhospitals/sectors/emergency-department-care](https://www.aihw.gov.au/reports-data/myhospitals/sectors/emergency-department-care)
 
-### Data Structure in Data Lake
+### Entity Relationship Diagram 
 
-Once the data is extracted from the API, it is stored on the data lake with the below data structure. 
+Once the data is extracted from the API, it is stored on the data lake as tables. The entity relationship diagram is based on the API structure and therefore, the data ingestion program can be easily modified to access other hospital data made available by the API. 
 
 ![Untitled](images/data_structure.png)
 
